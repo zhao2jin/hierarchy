@@ -1,0 +1,48 @@
+:host {
+    display: block;
+}
+
+.filter-container {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.filter-label {
+    color: #706e6b;
+    font-weight: 500;
+}
+
+.filter-button {
+    --slds-c-button-brand-color-background: #0070d2;
+    --slds-c-button-brand-color-background-hover: #005fb2;
+}
+
+.filter-actions {
+    margin-left: auto;
+}
+
+.timeline-container {
+    padding: 0.5rem 0;
+}
+
+.slds-timeline {
+    position: relative;
+}
+
+.slds-timeline::before {
+    content: '';
+    position: absolute;
+    left: 1rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: #e5e5e5;
+}
+
+.slds-notify_alert {
+    border-radius: 0.25rem;
+}
+
+.slds-illustration {
+    text-align: center;
+}

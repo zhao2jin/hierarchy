@@ -1,0 +1,57 @@
+:host {
+    display: block;
+}
+
+.slds-timeline__item_expandable {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.slds-timeline__item_expandable:last-child {
+    border-bottom: none;
+}
+
+.slds-timeline__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background-color: #f3f3f3;
+}
+
+.slds-timeline__icon_history {
+    background-color: #e8f4fd;
+}
+
+.timeline-item-title {
+    color: #0070d2;
+    text-decoration: none;
+}
+
+.timeline-item-title:hover {
+    text-decoration: underline;
+}
+
+.timeline-badge {
+    font-size: 0.65rem;
+    padding: 0.125rem 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.timeline-date {
+    color: #706e6b;
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
+
+.timeline-description {
+    color: #3e3e3c;
+    line-height: 1.4;
+}
+
+.slds-media__figure {
+    margin-right: 0.75rem;
+}

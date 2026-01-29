@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Timeline History Viewer</masterLabel>
+    <description>Displays a chronological timeline of history records and configured child objects for any sObject.</description>
+    <targets>
+        <target>lightning__RecordPage</target>
+        <target>lightning__AppPage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__RecordPage">
+            <property name="title" type="String" label="Custom Title (Optional)" default=""
+                      description="Leave blank to use automatic title (e.g., Opportunity History)"/>
+            <property name="maxRecords" type="Integer" label="Max Records per Page" default="50"
+                      description="Maximum number of records to load per page"/>
+            <property name="showFilters" type="Boolean" label="Show Filters" default="true"
+                      description="Show or hide the object type filter buttons"/>
+        </targetConfig>
+        <targetConfig targets="lightning__AppPage">
+            <property name="title" type="String" label="Custom Title (Optional)" default=""
+                      description="Leave blank to use automatic title (e.g., Opportunity History)"/>
+            <property name="maxRecords" type="Integer" label="Max Records per Page" default="50"
+                      description="Maximum number of records to load per page"/>
+            <property name="showFilters" type="Boolean" label="Show Filters" default="true"
+                      description="Show or hide the object type filter buttons"/>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

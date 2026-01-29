@@ -1,0 +1,115 @@
+<template>
+    <lightning-card title={headerTitle} icon-name="utility:activity">
+        <div slot="actions">
+            <lightning-button-group>
+                <lightning-button-icon
+                    icon-name="utility:refresh"
+                    alternative-text="Refresh"
+                    title="Refresh"
+                    onclick={handleRefresh}>
+                </lightning-button-icon>
+                <template lwc:if={hasConfigAccess}>
+                    <lightning-button-icon
+                        icon-name="utility:settings"
+                        alternative-text="Configure"
+                        title="Configure Timeline"
+                        onclick={handleConfigClick}>
+                    </lightning-button-icon>
+                </template>
+            </lightning-button-group>
+        </div>
+
+        <div class="slds-p-horizontal_medium">
+            <!-- Filters -->
+            <template lwc:if={hasFilters}>
+                <div class="slds-m-bottom_small filter-container">
+                    <div class="slds-grid slds-grid_vertical-align-center slds-wrap">
+                        <span class="slds-text-body_small slds-m-right_small filter-label">Filter by:</span>
+                        <template for:each={objectTypes} for:item="objectType">
+                            <lightning-button
+                                key={objectType.value}
+                                label={objectType.label}
+                                variant={objectType.variant}
+                                data-value={objectType.value}
+                                onclick={handleFilterClick}
+                                class="slds-m-right_xx-small slds-m-bottom_xx-small filter-button">
+                            </lightning-button>
+                        </template>
+                        <div class="slds-m-left_small filter-actions">
+                            <lightning-button
+                                label="All"
+                                variant="base"
+                                onclick={handleSelectAll}
+                                class="slds-m-right_xx-small">
+                            </lightning-button>
+                            <lightning-button
+                                label="None"
+                                variant="base"
+                                onclick={handleClearAll}>
+                            </lightning-button>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Loading State -->
+            <template lwc:if={isLoading}>
+                <div class="slds-align_absolute-center slds-p-vertical_large">
+                    <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+                </div>
+            </template>
+
+            <!-- Error State -->
+            <template lwc:if={hasError}>
+                <div class="slds-p-vertical_medium">
+                    <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+                        <span class="slds-assistive-text">error</span>
+                        <lightning-icon icon-name="utility:error" size="x-small" variant="inverse" class="slds-m-right_x-small"></lightning-icon>
+                        <h2>{errorMessage}</h2>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Timeline Content -->
+            <template lwc:if={isReady}>
+                <template lwc:if={hasRecords}>
+                    <div class="slds-timeline timeline-container">
+                        <template for:each={filteredRecords} for:item="record">
+                            <c-timeline-item key={record.id} record={record}></c-timeline-item>
+                        </template>
+                    </div>
+
+                    <!-- Load More Button -->
+                    <template lwc:if={hasMoreRecords}>
+                        <div class="slds-align_absolute-center slds-p-vertical_medium">
+                            <lightning-button
+                                label="Load More"
+                                variant="neutral"
+                                onclick={handleLoadMore}>
+                            </lightning-button>
+                        </div>
+                    </template>
+                </template>
+
+                <!-- Empty State -->
+                <template lwc:else>
+                    <div class="slds-illustration slds-illustration_small slds-p-vertical_large">
+                        <div class="slds-text-longform">
+                            <h3 class="slds-text-heading_medium slds-text-color_weak">No Records Found</h3>
+                            <p class="slds-text-body_regular slds-text-color_weak">{emptyMessage}</p>
+                        </div>
+                    </div>
+                </template>
+            </template>
+        </div>
+    </lightning-card>
+
+    <!-- Configuration Modal -->
+    <template lwc:if={showConfigModal}>
+        <c-timeline-history-config
+            object-api-name={objectApiName}
+            onclose={handleConfigClose}
+            onsave={handleConfigSaved}>
+        </c-timeline-history-config>
+    </template>
+</template>

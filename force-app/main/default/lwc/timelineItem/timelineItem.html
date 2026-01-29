@@ -1,0 +1,47 @@
+<template>
+    <div class="slds-timeline__item_expandable slds-timeline__item_task">
+        <span class="slds-assistive-text">{objectLabel}</span>
+        <div class="slds-media">
+            <div class="slds-media__figure">
+                <div class={iconContainerClass}>
+                    <lightning-icon
+                        icon-name={iconName}
+                        size="small"
+                        alternative-text={objectLabel}>
+                    </lightning-icon>
+                </div>
+            </div>
+            <div class="slds-media__body">
+                <div class="slds-grid slds-grid_align-spread slds-timeline__trigger">
+                    <div class="slds-grid slds-grid_vertical-align-center slds-truncate_container_75 slds-no-space">
+                        <template lwc:if={isNavigable}>
+                            <a href={recordUrl}
+                               onclick={handleTitleClick}
+                               onkeydown={handleKeyDown}
+                               class="slds-truncate timeline-item-title"
+                               title={title}>
+                                <strong>{title}</strong>
+                            </a>
+                        </template>
+                        <template lwc:else>
+                            <span class="slds-truncate timeline-item-title" title={title}>
+                                <strong>{title}</strong>
+                            </span>
+                        </template>
+                        <span class="slds-m-left_x-small slds-badge slds-badge_lightest timeline-badge">
+                            {objectLabel}
+                        </span>
+                    </div>
+                    <div class="slds-timeline__actions slds-timeline__actions_inline">
+                        <span class="slds-timeline__date timeline-date">{dateFormatted}</span>
+                    </div>
+                </div>
+                <template lwc:if={hasDescription}>
+                    <p class="slds-m-top_xx-small slds-text-body_small timeline-description">
+                        {description}
+                    </p>
+                </template>
+            </div>
+        </div>
+    </div>
+</template>
