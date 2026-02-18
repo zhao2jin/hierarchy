@@ -1,26 +1,11 @@
 import { LightningElement, api } from 'lwc';
-import { NavigationMixin } from 'lightning/navigation';
 
 /**
  * Individual timeline item component that displays a single record in the timeline.
  * Uses SLDS timeline item markup for consistent styling.
  */
-export default class TimelineItem extends NavigationMixin(LightningElement) {
+export default class TimelineItem extends LightningElement {
     @api record;
-
-    /**
-     * Get the record ID
-     */
-    get recordId() {
-        return this.record?.id;
-    }
-
-    /**
-     * Get the object API name
-     */
-    get objectApiName() {
-        return this.record?.objectApiName;
-    }
 
     /**
      * Get the object label for display
@@ -37,17 +22,17 @@ export default class TimelineItem extends NavigationMixin(LightningElement) {
     }
 
     /**
-     * Get the description text
-     */
-    get description() {
-        return this.record?.description || '';
-    }
-
-    /**
      * Check if description exists
      */
     get hasDescription() {
         return Boolean(this.record?.description);
+    }
+
+    /**
+     * Get the description text
+     */
+    get description() {
+        return this.record?.description || '';
     }
 
     /**
@@ -62,20 +47,6 @@ export default class TimelineItem extends NavigationMixin(LightningElement) {
      */
     get iconName() {
         return this.record?.iconName || 'standard:record';
-    }
-
-    /**
-     * Get the record URL
-     */
-    get recordUrl() {
-        return this.record?.recordUrl;
-    }
-
-    /**
-     * Check if record is navigable (has a valid URL)
-     */
-    get isNavigable() {
-        return Boolean(this.record?.recordUrl) && this.record?.recordType !== 'history';
     }
 
     /**
@@ -108,30 +79,5 @@ export default class TimelineItem extends NavigationMixin(LightningElement) {
      */
     get hasCreatedBy() {
         return Boolean(this.record?.additionalFields?.createdByName);
-    }
-
-    /**
-     * Handle click on the record title to navigate
-     */
-    handleTitleClick(event) {
-        if (this.isNavigable && this.recordId) {
-            event.preventDefault();
-            this[NavigationMixin.Navigate]({
-                type: 'standard__recordPage',
-                attributes: {
-                    recordId: this.recordId,
-                    actionName: 'view'
-                }
-            });
-        }
-    }
-
-    /**
-     * Handle keyboard navigation
-     */
-    handleKeyDown(event) {
-        if (event.key === 'Enter' || event.key === ' ') {
-            this.handleTitleClick(event);
-        }
     }
 }

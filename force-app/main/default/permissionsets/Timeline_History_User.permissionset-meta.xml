@@ -13,4 +13,8 @@
         <apexClass>TimelineConfigController</apexClass>
         <enabled>true</enabled>
     </classAccesses>
+    <classAccesses>
+        <apexClass>HistoryReportController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
 </PermissionSet>

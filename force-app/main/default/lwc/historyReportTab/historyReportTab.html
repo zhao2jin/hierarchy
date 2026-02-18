@@ -1,0 +1,250 @@
+<template>
+    <lightning-card title="History Report" icon-name="standard:history">
+
+        <div class="slds-p-horizontal_medium slds-p-bottom_medium">
+
+            <!-- ── No objects configured warning ─────────────────────────── -->
+            <template if:true={noObjectsConfigured}>
+                <div class="slds-notify slds-notify_alert slds-theme_warning slds-m-bottom_medium"
+                     role="alert">
+                    <lightning-icon icon-name="utility:warning"
+                                    variant="warning"
+                                    size="x-small"
+                                    class="slds-m-right_x-small">
+                    </lightning-icon>
+                    No objects have been configured. An admin must first configure objects
+                    using the <strong>Timeline History Viewer</strong> component on a record page.
+                </div>
+            </template>
+
+            <!-- ── Filter section ────────────────────────────────────────── -->
+            <template if:true={hasObjectOptions}>
+
+                <!-- Collapsible header -->
+                <div class="filter-toggle-row" onclick={handleToggleFilters}
+                     role="button" tabindex="0"
+                     aria-expanded={isFilterPanelOpen}
+                     onkeydown={handleToggleFilters}>
+                    <lightning-icon icon-name={filterChevronIcon}
+                                    size="x-small"
+                                    class="slds-m-right_x-small toggle-icon">
+                    </lightning-icon>
+                    <span class="slds-text-title_bold">Filters</span>
+                </div>
+
+                <!-- Collapsible body -->
+                <template if:true={isFilterPanelOpen}>
+                    <div class="filter-panel">
+
+                        <div class="slds-grid slds-wrap slds-gutters_small">
+
+                            <!-- ── Left: Object multi-select ────────────── -->
+                            <div class="slds-col slds-size_1-of-1 slds-large-size_7-of-12">
+                                <lightning-dual-listbox
+                                    name="objectFilter"
+                                    label="Objects to Include"
+                                    source-label="Available"
+                                    selected-label="Selected"
+                                    options={objectOptions}
+                                    value={selectedObjects}
+                                    min="1"
+                                    onchange={handleObjectSelection}>
+                                </lightning-dual-listbox>
+                            </div>
+
+                            <!-- ── Right: Date + text filters ───────────── -->
+                            <div class="slds-col slds-size_1-of-1 slds-large-size_5-of-12">
+
+                                <!-- Quick date presets -->
+                                <p class="slds-form-element__label slds-m-bottom_xx-small">
+                                    Quick Date
+                                </p>
+                                <div class="preset-row slds-m-bottom_small">
+                                    <template for:each={presetButtons} for:item="btn">
+                                        <lightning-button
+                                            key={btn.value}
+                                            label={btn.label}
+                                            variant={btn.variant}
+                                            data-preset={btn.value}
+                                            onclick={handleDatePreset}
+                                            class="preset-btn">
+                                        </lightning-button>
+                                    </template>
+                                </div>
+
+                                <!-- Date range -->
+                                <div class="slds-grid slds-wrap slds-gutters_x-small">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <lightning-input
+                                            type="date"
+                                            name="startDate"
+                                            label="From Date"
+                                            value={startDate}
+                                            onchange={handleStartDateChange}>
+                                        </lightning-input>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <lightning-input
+                                            type="date"
+                                            name="endDate"
+                                            label="To Date"
+                                            value={endDate}
+                                            onchange={handleEndDateChange}>
+                                        </lightning-input>
+                                    </div>
+                                </div>
+
+                                <!-- Additional filters (client-side, with autocomplete) -->
+                                <div class="slds-grid slds-wrap slds-gutters_x-small slds-m-top_x-small">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <div class="slds-form-element">
+                                            <label class="slds-form-element__label"
+                                                   for="fieldFilterInput">
+                                                Field Changed
+                                            </label>
+                                            <div class="slds-form-element__control">
+                                                <input id="fieldFilterInput"
+                                                       type="text"
+                                                       class="slds-input"
+                                                       placeholder="Type to filter…"
+                                                       list="fieldSuggestionsList"
+                                                       value={fieldFilter}
+                                                       oninput={handleFieldFilterInput} />
+                                                <datalist id="fieldSuggestionsList">
+                                                    <template for:each={fieldSuggestions}
+                                                              for:item="s">
+                                                        <option key={s} value={s}></option>
+                                                    </template>
+                                                </datalist>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <div class="slds-form-element">
+                                            <label class="slds-form-element__label"
+                                                   for="changedByFilterInput">
+                                                Changed By
+                                            </label>
+                                            <div class="slds-form-element__control">
+                                                <input id="changedByFilterInput"
+                                                       type="text"
+                                                       class="slds-input"
+                                                       placeholder="Type to filter…"
+                                                       list="changedBySuggestionsList"
+                                                       value={changedByFilter}
+                                                       oninput={handleChangedByFilterInput} />
+                                                <datalist id="changedBySuggestionsList">
+                                                    <template for:each={changedBySuggestions}
+                                                              for:item="s">
+                                                        <option key={s} value={s}></option>
+                                                    </template>
+                                                </datalist>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- Apply button row -->
+                        <div class="apply-row slds-m-top_small">
+                            <lightning-button
+                                label="Apply Filters"
+                                variant="brand"
+                                icon-name="utility:search"
+                                disabled={isApplyDisabled}
+                                onclick={handleApplyFilters}>
+                            </lightning-button>
+                            <template if:true={isPageLoading}>
+                                <lightning-spinner
+                                    alternative-text="Loading"
+                                    size="small"
+                                    class="inline-spinner">
+                                </lightning-spinner>
+                            </template>
+                        </div>
+
+                    </div><!-- /.filter-panel -->
+                </template>
+
+            </template><!-- /hasObjectOptions -->
+
+            <!-- ── Error ──────────────────────────────────────────────────── -->
+            <template if:true={hasError}>
+                <div class="slds-notify slds-notify_alert slds-theme_error slds-m-top_small"
+                     role="alert">
+                    {errorMessage}
+                </div>
+            </template>
+
+            <!-- ── Record count ───────────────────────────────────────────── -->
+            <template if:true={showTable}>
+                <div class="count-bar slds-m-top_small">
+                    <span class="count-label">{recordCountLabel}</span>
+                </div>
+            </template>
+
+            <!-- ── Datatable ──────────────────────────────────────────────── -->
+            <template if:true={showTable}>
+                <div class="table-container slds-m-top_small">
+                    <lightning-datatable
+                        key-field="id"
+                        data={tableData}
+                        columns={columns}
+                        sorted-by={sortedBy}
+                        sorted-direction={sortedDirection}
+                        onsort={handleSort}
+                        enable-infinite-loading
+                        onloadmore={handleLoadMore}
+                        is-loading={isTableLoading}
+                        hide-checkbox-column
+                        column-widths-mode="auto">
+                    </lightning-datatable>
+                </div>
+
+                <template if:false={hasMore}>
+                    <p class="all-loaded-msg slds-text-body_small slds-text-color_weak
+                               slds-text-align_center slds-m-top_small">
+                        All records loaded
+                    </p>
+                </template>
+            </template>
+
+            <!-- ── Empty state (after search returns nothing) ─────────────── -->
+            <template if:true={showEmptyState}>
+                <div class="empty-state slds-text-align_center slds-m-top_large">
+                    <lightning-icon icon-name="utility:search" size="large"
+                                    class="slds-m-bottom_medium">
+                    </lightning-icon>
+                    <h3 class="slds-text-heading_small slds-m-bottom_x-small">
+                        No history records found
+                    </h3>
+                    <p class="slds-text-body_regular slds-text-color_weak">
+                        {emptyStateMessage}
+                    </p>
+                </div>
+            </template>
+
+            <!-- ── Initial prompt (before first search) ──────────────────── -->
+            <template if:false={hasSearched}>
+                <template if:false={isPageLoading}>
+                    <template if:true={hasObjectOptions}>
+                        <div class="empty-state slds-text-align_center slds-m-top_large">
+                            <lightning-icon icon-name="standard:history" size="large"
+                                            class="slds-m-bottom_medium">
+                            </lightning-icon>
+                            <h3 class="slds-text-heading_small slds-m-bottom_x-small">
+                                Select objects and apply filters to view history
+                            </h3>
+                            <p class="slds-text-body_regular slds-text-color_weak">
+                                Use a date range to limit results and improve performance.
+                            </p>
+                        </div>
+                    </template>
+                </template>
+            </template>
+
+        </div>
+    </lightning-card>
+</template>

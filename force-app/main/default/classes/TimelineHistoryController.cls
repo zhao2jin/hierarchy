@@ -229,8 +229,8 @@ public with sharing class TimelineHistoryController {
             return records;
         }
 
-        // First, get all child record IDs related to the parent
-        String childIdQuery = 'SELECT Id FROM ' + String.escapeSingleQuotes(childObject) + ' ' +
+        // First, get all child record IDs and Names related to the parent
+        String childIdQuery = 'SELECT Id, Name FROM ' + String.escapeSingleQuotes(childObject) + ' ' +
                               'WHERE ' + String.escapeSingleQuotes(relationshipField) + ' = :recordId';
         List<SObject> childRecords = Database.query(childIdQuery);
 
@@ -238,10 +238,13 @@ public with sharing class TimelineHistoryController {
             return records;
         }
 
-        // Collect child record IDs
+        // Collect child record IDs and build a name lookup map
         Set<Id> childRecordIds = new Set<Id>();
+        Map<Id, String> childRecordNames = new Map<Id, String>();
         for (SObject child : childRecords) {
-            childRecordIds.add((Id) child.get('Id'));
+            Id childId = (Id) child.get('Id');
+            childRecordIds.add(childId);
+            childRecordNames.put(childId, (String) child.get('Name'));
         }
 
         // Query history for these child records
@@ -272,8 +275,11 @@ public with sharing class TimelineHistoryController {
             record.formatDate();
             record.recordType = 'childHistory';
 
-            // Get the parent record ID for linking
+            // Get the parent record ID for linking and name for the title
             Id parentRecordId = (Id) history.get(parentFieldName);
+            String childRecordName = childRecordNames.containsKey(parentRecordId)
+                ? childRecordNames.get(parentRecordId)
+                : objectLabel;
             record.recordUrl = '/' + parentRecordId;
 
             // Build title and description from field change
@@ -291,8 +297,8 @@ public with sharing class TimelineHistoryController {
                 createdByName = 'Unknown User';
             }
 
-            // Get field label for the child object
-            record.title = objectLabel + ': ' + getFieldLabel(childObject, fieldName) + ' changed';
+            // Get field label for the child object, prefixed with the specific record name
+            record.title = childRecordName + ': ' + getFieldLabel(childObject, fieldName) + ' changed';
             record.description = buildHistoryDescription(oldValue, newValue, createdByName);
 
             record.additionalFields.put('fieldName', fieldName);
