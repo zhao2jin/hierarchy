@@ -33,10 +33,21 @@ sf org assign permset --name Timeline_History_User --target-org my-org
 
 ### 5. Add the History Report tab
 
-1. In **Setup → App Manager**, edit the target app.
-2. Under **Navigation Items**, add a new item → **Lightning Component** → **historyReportTab**.
+A Lightning Tab must be created before the component can appear in any app's navigation.
 
-Alternatively, drag **historyReportTab** onto any App Page in Lightning App Builder.
+**Step A — Create the Lightning Tab**
+
+1. Go to **Setup → Tabs**.
+2. Under **Lightning Component Tabs**, click **New**.
+3. Set **Lightning Component** to `c:historyReportTab`.
+4. Give it a label (e.g. *History Report*) and choose a tab style icon.
+5. Save.
+
+**Step B — Add the tab to an app**
+
+1. Go to **Setup → App Manager** and click **Edit** on the target app.
+2. Under **Navigation Items**, find the tab you just created (by label) and move it to the **Selected Items** list.
+3. Save.
 
 ## Prerequisites
 
